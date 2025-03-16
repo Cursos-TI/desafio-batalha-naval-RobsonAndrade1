@@ -1,62 +1,81 @@
 #include <stdio.h>
 
-int main() {
-    char linha[10] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
-    
-// Criando Tabuleiro (Matriz 10x10)
-    int tabuleiro[10][10];
-    
-// Inicializando o tabuleiro com 0 (água)
-    for (int i = 0; i < 10; i++) {
-        for (int j = 0; j < 10; j++) {
-            tabuleiro[i][j] = 0;
+#define TAMANHO 10
+
+// Função para inicializar o tabuleiro com água (0)
+    void inicializarTabuleiro(int tabuleiro[TAMANHO][TAMANHO]) {
+    for (int i = 0; i < TAMANHO; i++) {
+        for (int j = 0; j < TAMANHO; j++) {
+            tabuleiro[i][j] = 0;  // Inicializa com água
         }
     }
+}
+// Função para aplicar uma matriz de habilidade ao tabuleiro
+    void aplicarHabilidade(int tabuleiro[TAMANHO][TAMANHO], int matriz[5][5], int x, int y) {
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            int posX = x + i - 2;
+            int posY = y + j - 2;
 
-// Posicionando navio horizontal (ocupa 3 posições)
-    int navio_horizontal[3] = {2, 3, 4};  // Coloca o navio nas colunas 2, 3 e 4 na linha 2
-    for (int i = 0; i < 3; i++) {
-        tabuleiro[2][navio_horizontal[i]] = 3;  // Marca as posições do navio com 3
-    }
-
-// Posicionando navio vertical (ocupa 3 posições)
-    int navio_vertical[3] = {3, 4, 5};  // Coloca o navio nas linhas 3, 4 e 5 na coluna 7
-    for (int i = 0; i < 3; i++) {
-        tabuleiro[navio_vertical[i]][7] = 3;  // Marca as posições do navio com 3
-    }
-
-// Posicionando navio diagonal (da esquerda superior para a direita inferior)
-    int navio_diagonal1[3] = {2, 3, 4};  // Linha e coluna aumentam
-    for (int i = 0; i < 3; i++) {
-        if (tabuleiro[navio_diagonal1[i]][navio_diagonal1[i] - 2] == 0) {
-            tabuleiro[navio_diagonal1[i]][navio_diagonal1[i] - 2] = 3;  // Marca as posições do navio com 3
+            // Verifica se a posição ajustada está dentro dos limites do tabuleiro
+            if (posX >= 0 && posX < TAMANHO && posY >= 0 && posY < TAMANHO && matriz[i][j] == 1) {
+                tabuleiro[posX][posY] = 5; // Marca área de efeito
+            }
         }
     }
-
-// Posicionando navio diagonal (da direita superior para a esquerda inferior)
-    int navio_diagonal2[3] = {0, 1, 2};  // Linha aumenta e coluna diminui
-    for (int i = 0; i < 3; i++) {
-        if (tabuleiro[navio_diagonal2[i]][9 - navio_diagonal2[i]] == 0) {
-            tabuleiro[navio_diagonal2[i]][9 - navio_diagonal2[i]] = 3;  // Marca as posições do navio com 3
+}
+// Função para exibir o tabuleiro no console
+    void exibirTabuleiro(int tabuleiro[TAMANHO][TAMANHO]) {
+    printf("   A B C D E F G H I J\n");
+    for (int i = 0; i < TAMANHO; i++) {
+        printf("%2d ", i + 1);
+        for (int j = 0; j < TAMANHO; j++) {
+            printf("%d ", tabuleiro[i][j]);
         }
-    }
-
-// Exibindo o tabuleiro
-    printf("   ");  // Para alinhar as letras de A até J
-    for (int i = 0; i < 10; i++) {
-        printf("%c ", linha[i]);  // Imprime as letras de A a J
-    }
-
-    printf("\n");
-
-    for (int i = 0; i < 10; i++) {
-        printf("%2d ", i + 1);  // Imprime os números das linhas (1 a 10)
-        for (int j = 0; j < 10; j++) {
-            printf("%d ", tabuleiro[i][j]);  // Imprime o valor de cada posição
-        }
-
         printf("\n");
     }
+}
 
+    int main() {
+    int tabuleiro[TAMANHO][TAMANHO]; // Declara a matriz do tabuleiro
+    inicializarTabuleiro(tabuleiro); // Inicializa o tabuleiro com água
+    
+    
+    // Matriz da habilidade Cone (5x5)
+    int cone[5][5] = {
+        {0, 0, 1, 0, 0},
+        {0, 1, 1, 1, 0},
+        {1, 1, 1, 1, 1},
+        {0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0}
+    };
+    
+    // Matriz da habilidade Cruz (5x5)
+    int cruz[5][5] = {
+        {0, 0, 1, 0, 0},
+        {0, 0, 1, 0, 0},
+        {1, 1, 1, 1, 1},
+        {0, 0, 1, 0, 0},
+        {0, 0, 1, 0, 0}
+    };
+    
+    // Matriz da habilidade Octaedro (5x5)
+    int octaedro[5][5] = {
+        {0, 0, 1, 0, 0},
+        {0, 1, 1, 1, 0},
+        {1, 1, 1, 1, 1},
+        {0, 1, 1, 1, 0},
+        {0, 0, 1, 0, 0}
+    };
+    
+// Aplicando habilidades ao tabuleiro
+    aplicarHabilidade(tabuleiro, cone, 2, 2);  
+    aplicarHabilidade(tabuleiro, cruz, 7, 2);  
+    aplicarHabilidade(tabuleiro, octaedro, 3, 7); 
+
+// Exibe o tabuleiro atualizado com as habilidades aplicadas
+    exibirTabuleiro(tabuleiro);
+    
     return 0;
 }
+
